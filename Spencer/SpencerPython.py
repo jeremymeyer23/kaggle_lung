@@ -38,7 +38,7 @@ def load_scan(path):
         
     return slices
 
-# Change the hu of the slices to match the 
+# Change the hu of the slices to match the Housefield Units
 def get_pixels_hu(slices):
     image = np.stack([s.pixel_array for s in slices])
     # Convert to int16 (from sometimes int16), 
@@ -119,3 +119,20 @@ def plot_3d(image, threshold=-300):
     plt.show()
     
 plot_3d(pix_resampled, 400)
+
+
+"""
+Now that we have done resampling for one ct scan we want to do that for the rest
+and save the results.
+"""
+
+ct_scans_list = []
+
+for i in range(len(patients)):
+    iter_patient = load_scan(INPUT_FOLDER + patients[i])
+    iter_patient_pixels = get_pixels_hu(iter_patient)
+    pix_resampled, spacing = resample(iter_patient_pixels, iter_patient, [1,1,1])
+    ct_scans_list.append([pix_resampled,spacing])
+    print(i)
+
+pydicom.read_file(INPUT_FOLDER + patients[3] + '/1.dcm')
